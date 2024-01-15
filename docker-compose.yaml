@@ -4,11 +4,15 @@ services:
     image: mysql:8.0
     restart: always
     container_name: spring-mysql-test
+    volumes:
+      - dbmysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_DATABASE: db-docker-test
-      MYSQL_USER: "mysql"
-      MYSQL_PASSWORD: "root"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_docker_test
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: root
+    expose:
+      - 3306
     ports:
       - "3307:3306"
     networks:
@@ -25,6 +29,25 @@ services:
     networks:
       - spring-mysql-network
 
+  app:
+    image: spring-docker-test
+    container_name: spring-app-container-test
+    volumes:
+      - ./src:/app  # Monta o diretório local 'src' no diretório '/app' dentro do contêiner
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=jdbc:mysql://172.27.0.2:3306/db_docker_test
+      - DATABASE_USERNAME=mysql
+      - DATABASE_PASSWORD=root
+    depends_on:
+      - mysql
+    networks:
+      - spring-mysql-network
+
 networks:
   spring-mysql-network:
     driver: bridge
+
+volumes:
+  dbmysql:
