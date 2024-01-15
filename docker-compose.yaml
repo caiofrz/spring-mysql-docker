@@ -1,0 +1,30 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    container_name: spring-mysql-test
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: db-docker-test
+      MYSQL_USER: "mysql"
+      MYSQL_PASSWORD: "root"
+    ports:
+      - "3307:3306"
+    networks:
+      - spring-mysql-network
+
+  phpmyadmin:
+    image: phpmyadmin
+    depends_on:
+      - mysql
+    ports:
+      - "8000:80"
+    environment:
+      PMA_HOST: mysql
+    networks:
+      - spring-mysql-network
+
+networks:
+  spring-mysql-network:
+    driver: bridge
